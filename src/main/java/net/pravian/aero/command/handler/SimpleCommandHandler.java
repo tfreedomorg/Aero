@@ -148,7 +148,7 @@ public class SimpleCommandHandler<T extends AeroPlugin<T>> extends AbstractComma
         for (Class<?> clazz : classes) {
             String className = clazz.getSimpleName();
             if (!className.startsWith(commandClassPrefix)) {
-                logger.warning("Skipping command class: " + className + ". Class does not have required prefix!");
+                logger.debug("Skipping command class: " + className + ". Class does not have required prefix!");
                 continue;
             }
 
@@ -186,7 +186,7 @@ public class SimpleCommandHandler<T extends AeroPlugin<T>> extends AbstractComma
         if (name == null) {
             name = command.getClass().getSimpleName();
             if (!name.startsWith(commandClassPrefix)) {
-                logger.warning("Skipping class in command package: " + name + ". Class does not have required prefix.");
+                logger.debug("Skipping class in command package: " + name + ". Class does not have required prefix.");
                 return;
             }
 
