@@ -2,7 +2,6 @@ package net.pravian.aero.util;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -151,7 +150,13 @@ public class Commands {
      * @see org.bukkit.event.player.PlayerCommandPreprocessEvent
      */
     public static String[] parseCommandArgs(String commandMessage) {
-        return (String[]) ArrayUtils.remove(commandMessage.split(" "), 0);
+        String[] parts = commandMessage.split(" ");
+        if (parts.length <= 1) {
+            return new String[0];
+        }
+        String[] args = new String[parts.length - 1];
+        System.arraycopy(parts, 1, args, 0, args.length);
+        return args;
     }
 
     /**

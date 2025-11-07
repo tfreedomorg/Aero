@@ -177,11 +177,11 @@ public class Players {
      * @return The location / null
      */
     public static Location getTarget(LivingEntity entity, int range) {
-        @SuppressWarnings("deprecation")
-        final Block block = entity.getTargetBlock(Materials.TRANSPARENT_MATERIALS, range);
-        if (block == null) {
+        // Use rayTraceBlocks instead of deprecated getTargetBlock
+        org.bukkit.util.RayTraceResult result = entity.rayTraceBlocks(range);
+        if (result == null || result.getHitBlock() == null) {
             return null;
         }
-        return block.getLocation();
+        return result.getHitBlock().getLocation();
     }
 }

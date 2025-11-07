@@ -5,7 +5,7 @@ import net.pravian.aero.plugin.AeroPlugin;
 import net.pravian.aero.util.Players;
 import net.pravian.aero.util.Plugins;
 import net.pravian.aero.util.Worlds;
-import org.apache.commons.lang.StringUtils;
+import net.pravian.aero.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;

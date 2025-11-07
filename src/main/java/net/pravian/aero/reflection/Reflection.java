@@ -27,9 +27,47 @@ import org.bukkit.entity.Player;
 
 public class Reflection {
 
-    public static String VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+    private static String detectVersion() {
+        try {
+            String packageName = Bukkit.getServer().getClass().getPackage().getName();
+            String[] parts = packageName.split("\\.");
+            
+            // Try to find the version part (usually the last part or contains version pattern)
+            // Old format: org.bukkit.craftbukkit.v1_15_R1 -> v1_15_R1
+            // New format might be different, so we look for the version-like part
+            for (int i = parts.length - 1; i >= 0; i--) {
+                String part = parts[i];
+                // Check if it looks like a version (starts with 'v' and contains numbers/underscores)
+                if (part.startsWith("v") && (part.contains("_") || part.matches("v\\d+"))) {
+                    return part;
+                }
+            }
+            
+            // Fallback: if we have at least 4 parts, use index 3 (old behavior)
+            if (parts.length > 3) {
+                return parts[3];
+            }
+            
+            // Last resort: use the last part
+            if (parts.length > 0) {
+                return parts[parts.length - 1];
+            }
+            
+            // Ultimate fallback
+            return "unknown";
+        } catch (Exception e) {
+            // If anything goes wrong, return a safe default
+            return "unknown";
+        }
+    }
+    
+    public static String VERSION = detectVersion();
     public static String NMS = "net.minecraft.server";
     public static String OBC = "org.bukkit.craftbukkit";
+    
+    // Note: In Paper 1.21.10+, NMS package structure may have changed.
+    // The VERSION string will be automatically detected from the server class package.
+    // NMS usage is discouraged in modern Paper versions - prefer using the Bukkit/Paper API.
 
     /**
      * Get a class from OBC.
@@ -455,12 +493,36 @@ public class Reflection {
         return null;
     }
 
+    /**
+     * Sends a packet to a player.
+     * 
+     * Note: In Paper 1.21.10+, field names may have changed.
+     * Consider using Paper's PacketEvents API or other modern alternatives instead.
+     */
     public static void sendPacket(Player player, Object packet) {
         try {
             Object entity_player = getHandle(player);
-            Field player_connection = entity_player.getClass().getField("playerConnection");
+            if (entity_player == null) {
+                return;
+            }
+            // Try both old and new field names for compatibility
+            Field player_connection = null;
+            try {
+                player_connection = entity_player.getClass().getField("playerConnection");
+            } catch (NoSuchFieldException e) {
+                try {
+                    player_connection = entity_player.getClass().getField("connection");
+                } catch (NoSuchFieldException ignored) {
+                }
+            }
+            if (player_connection == null) {
+                return;
+            }
             player_connection.setAccessible(true);
             Object initiatedConnection = player_connection.get(entity_player);
+            if (initiatedConnection == null) {
+                return;
+            }
             Method sendPacket = initiatedConnection.getClass().getMethod("sendPacket", getPacketClass());
             sendPacket.invoke(initiatedConnection, packet);
         } catch (Exception ex) {

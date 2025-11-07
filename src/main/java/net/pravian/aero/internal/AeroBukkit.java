@@ -1,9 +1,10 @@
 package net.pravian.aero.internal;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Properties;
 import net.pravian.aero.Aero;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -79,7 +80,10 @@ public class AeroBukkit extends JavaPlugin implements AeroContainer {
         } catch (Exception ex) {
             if (aero.isDebugging()) {
                 Bukkit.getLogger().severe("[" + Aero.NAME + "] Could not load build information!");
-                Bukkit.getLogger().severe("[" + Aero.NAME + "] " + ExceptionUtils.getFullStackTrace(ex));
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                Bukkit.getLogger().severe("[" + Aero.NAME + "] " + sw.toString());
             }
         }
     }

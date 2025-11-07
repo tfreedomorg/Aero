@@ -15,7 +15,6 @@
  */
 package net.pravian.aero.command;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -50,7 +49,9 @@ public enum SourceType {
     }
 
     public boolean matches(CommandSender sender) {
-        Validate.notNull(sender, "Sender may not be null");
+        if (sender == null) {
+            throw new IllegalArgumentException("Sender may not be null");
+        }
 
         if (this == ANY) {
             return true;

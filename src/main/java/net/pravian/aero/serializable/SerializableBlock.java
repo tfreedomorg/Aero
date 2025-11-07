@@ -13,7 +13,6 @@ import org.bukkit.block.data.BlockData;
  *
  * @see SerializableObject
  */
-@SuppressWarnings("deprecation")
 public class SerializableBlock extends SerializableObject<Block> {
 
     private final String worldName;
@@ -62,9 +61,6 @@ public class SerializableBlock extends SerializableObject<Block> {
         
         // Type
         Material t = Material.matchMaterial(blockParts[4]);
-        if (t == null) {
-            t = Material.matchMaterial(blockParts[4], true);
-        }
         this.type = t;
         
         // Data
@@ -91,10 +87,12 @@ public class SerializableBlock extends SerializableObject<Block> {
     /**
      * Returns the Material-ID the block is made of.
      *
-     * @return The material-ID;
+     * @return The material-ID; -1 if material is null
+     * @deprecated Material IDs are no longer supported in modern Minecraft versions
      */
+    @Deprecated
     public int getId() {
-        return type == null ? -1 : type.getId();
+        return -1; // Material IDs are no longer supported
     }
 
     /**

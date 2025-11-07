@@ -2,4 +2,5 @@ name: Aero
 version: ${app.buildversion}
 authors: [Prozza]
 main: net.pravian.aero.internal.AeroBukkit
+api-version: 1.21
 load: STARTUP

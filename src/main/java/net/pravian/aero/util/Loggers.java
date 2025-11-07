@@ -1,6 +1,7 @@
 package net.pravian.aero.util;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -63,7 +64,10 @@ public class Loggers {
         final String line;
 
         if (message instanceof Throwable) {
-            line = ExceptionUtils.getStackTrace((Throwable) message);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ((Throwable) message).printStackTrace(pw);
+            line = sw.toString();
         } else {
             line = String.valueOf(message);
         }
@@ -84,7 +88,10 @@ public class Loggers {
         final String line;
 
         if (message instanceof Throwable) {
-            line = ExceptionUtils.getStackTrace((Throwable) message);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ((Throwable) message).printStackTrace(pw);
+            line = sw.toString();
         } else {
             line = String.valueOf(message);
         }

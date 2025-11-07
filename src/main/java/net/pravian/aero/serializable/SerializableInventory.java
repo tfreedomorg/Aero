@@ -9,13 +9,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /**
  * Represents a serializable inventory.
  *
  * @see SerializableObject
  */
-@SuppressWarnings("deprecation")
 public class SerializableInventory extends SerializableObject<Inventory> {
 
     private final Inventory inventory;
@@ -38,9 +39,13 @@ public class SerializableInventory extends SerializableObject<Inventory> {
                     String isType = String.valueOf(is.getType().toString());
                     serializedItemStack += "t@" + isType;
 
-                    if (is.getDurability() != 0) {
-                        String isDurability = String.valueOf(is.getDurability());
-                        serializedItemStack += ":d@" + isDurability;
+                    ItemMeta meta = is.getItemMeta();
+                    if (meta instanceof Damageable) {
+                        Damageable damageable = (Damageable) meta;
+                        if (damageable.getDamage() != 0) {
+                            String isDurability = String.valueOf(damageable.getDamage());
+                            serializedItemStack += ":d@" + isDurability;
+                        }
                     }
 
                     if (is.getAmount() != 1) {
@@ -93,18 +98,27 @@ public class SerializableInventory extends SerializableObject<Inventory> {
                 for (String itemInfo : serializedItemStack) {
                     String[] itemAttribute = itemInfo.split("@");
                     if (itemAttribute[0].equals("t")) {
-                        is = new ItemStack(Material.getMaterial(itemAttribute[1]));
-                        createdItemStack = true;
+                        Material material = Material.matchMaterial(itemAttribute[1]);
+                        if (material != null) {
+                            is = new ItemStack(material);
+                            createdItemStack = true;
+                        }
                     } else if (is == null) {
                         // Quick return to avoid NPE
                     } else if (itemAttribute[0].equals("d") && createdItemStack) {
-                        is.setDurability(Short.valueOf(itemAttribute[1]));
+                        ItemMeta meta = is.getItemMeta();
+                        if (meta instanceof Damageable) {
+                            Damageable damageable = (Damageable) meta;
+                            damageable.setDamage(Short.valueOf(itemAttribute[1]));
+                            is.setItemMeta(meta);
+                        }
                     } else if (itemAttribute[0].equals("a") && createdItemStack) {
                         is.setAmount(Integer.valueOf(itemAttribute[1]));
                     } else if (itemAttribute[0].equals("e") && createdItemStack) {
                         String[] split = itemAttribute[1].split(":");
                         if (split.length == 2) {
-                            Enchantment e = Enchantment.getByKey(new NamespacedKey(split[0], split[1]));
+                            NamespacedKey key = new NamespacedKey(split[0], split[1]);
+                            Enchantment e = org.bukkit.Registry.ENCHANTMENT.get(key);
                             if (e != null) {
                                 is.addEnchantment(e, Integer.valueOf(itemAttribute[2]));
                             }

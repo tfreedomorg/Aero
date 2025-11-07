@@ -140,6 +140,9 @@ public class SimpleCommandHandler<T extends AeroPlugin<T>> extends AbstractComma
     @SuppressWarnings("unchecked")
     public int loadFrom(Package pack) {
         List<Class<?>> classes = loadClasses(pack);
+        if (classes == null) {
+            return 0;
+        }
 
         int loaded = 0;
         for (Class<?> clazz : classes) {

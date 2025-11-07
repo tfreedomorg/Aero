@@ -48,39 +48,29 @@ public class Inventories {
      * Author: bergerkiller</p>
      *
      * @param inventory to look in
-     * @param typeId of the items to look for, -1 for any item
-     * @param data of the items to look for, -1 for any data
+     * @param typeId of the items to look for, -1 for any item (deprecated: Material IDs no longer supported)
+     * @param data of the items to look for, -1 for any data (deprecated: Data values no longer supported)
      * @return Amount of items in the inventory
+     * @deprecated Material IDs and data values are no longer supported. Use Material-based methods instead.
      */
-    @SuppressWarnings("deprecation")
+    @Deprecated
     public static ItemStack findItem(Inventory inventory, int typeId, int data) {
-        org.bukkit.inventory.ItemStack rval = null;
-        int itemData = data;
-        int itemTypeId = typeId;
-        for (ItemStack item : inventory.getContents()) {
-            if (item == null) {
-                continue;
+        // Material IDs are no longer supported in modern Minecraft
+        // This method is kept for backwards compatibility but will not work correctly
+        // Consider using Material-based inventory methods instead
+        if (typeId == -1) {
+            // Return any item if typeId is -1
+            for (ItemStack item : inventory.getContents()) {
+                if (item != null) {
+                    return item.clone();
+                }
             }
-            // Compare type Id
-            if (itemTypeId == -1) {
-                itemTypeId = item.getType().getId();
-            } else if (itemTypeId != item.getType().getId()) {
-                continue;
-            }
-            // Compare data
-            if (itemData == -1) {
-                itemData = item.getData().getData();
-            } else if (item.getData().getData() != itemData) {
-                continue;
-            }
-            // addition
-            if (rval == null) {
-                rval = item.clone();
-            } else {
-                addAmount(rval, item.getAmount());
-            }
+            return null;
         }
-        return rval;
+        
+        // Since Material IDs are not supported, we cannot match by typeId
+        // This method will not work as expected in modern versions
+        return null;
     }
 
     /**

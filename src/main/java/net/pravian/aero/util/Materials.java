@@ -3,8 +3,8 @@ package net.pravian.aero.util;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 
-@SuppressWarnings("deprecation")
 public class Materials {
 
     /**
@@ -14,10 +14,17 @@ public class Materials {
     public static final HashSet<Material> TRANSPARENT_MATERIALS = new HashSet<Material>();
 
     static {
-        // Materials from Material.isTransparent()
+        // Materials that are transparent - using BlockData API instead of deprecated isTransparent()
         for (Material mat : Material.values()) {
-            if (mat.isTransparent()) {
-                TRANSPARENT_MATERIALS.add(mat);
+            if (mat.isBlock()) {
+                try {
+                    BlockData blockData = mat.createBlockData();
+                    if (blockData != null && !blockData.getMaterial().isOccluding()) {
+                        TRANSPARENT_MATERIALS.add(mat);
+                    }
+                } catch (Exception ignored) {
+                    // Material might not support block data, skip it
+                }
             }
         }
 

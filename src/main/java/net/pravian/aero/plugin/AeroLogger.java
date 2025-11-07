@@ -3,7 +3,8 @@ package net.pravian.aero.plugin;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.bukkit.plugin.Plugin;
 
 /*
@@ -212,7 +213,10 @@ public class AeroLogger extends Logger {
 
     private String getLogMessage(Object message) {
         if (message instanceof Throwable) {
-            return ExceptionUtils.getStackTrace((Throwable) message);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ((Throwable) message).printStackTrace(pw);
+            return sw.toString();
         } else {
             return String.valueOf(message);
         }
